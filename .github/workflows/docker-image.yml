@@ -27,7 +27,7 @@ jobs:
       - name: Scan Docker image with Trivy
         run: |
           trivy image --severity LOW,MEDIUM,HIGH --format html -o trivy-report.html my-image-name:${{ github.run_id }} || true
-
+          ls -la trivy-report.html
       - name: Upload Trivy scan report
         uses: actions/upload-artifact@v3
         with:
