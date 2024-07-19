@@ -7,12 +7,28 @@ on:
     branches: [ "develop" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag my-image-name:${{ github.run_id }}
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get install wget apt-transport-https gnupg lsb-release -y
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update -y
+          sudo apt-get install trivy -y
+
+      - name: Scan Docker image with Trivy
+        run: trivy image --severity LOW,MEDIUM,HIGH --format html -o trivy-report.html
+
+      - name: Upload Trivy scan report
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy-scan-report
+          path: trivy-report.html
