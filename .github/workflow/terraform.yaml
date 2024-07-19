@@ -8,11 +8,13 @@ on:
 
 
 jobs:
-- job:
-    - name: Checkout
-      uses: actions/checkout@v4.1.7
+  docker_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.7
     
-    - name: Docker Buildx Bake
-      uses: docker/bake-action@v5.4.0
+      - name: Docker Buildx Bake
+        uses: docker/bake-action@v5.4.0
             
             
